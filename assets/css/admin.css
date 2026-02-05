@@ -8,6 +8,7 @@
 /* Dashboard Body - Full Bleed Layout */
 .sv-dashboard-wrap {
     background-color: #f0f2f5 !important;
+    /* Negate WP admin padding and ensure it fills the width */
     margin: -20px -20px 0 -20px !important; 
     padding: 30px !important;
     min-height: calc(100vh - 32px) !important;
@@ -81,7 +82,7 @@
     border: 1px solid #e2e8f0 !important;
     padding: 25px !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-    height: 100% !important;
+    height: auto !important; /* Allow container to grow with content */
     display: flex !important;
     flex-direction: column !important;
 }
@@ -114,9 +115,13 @@
     letter-spacing: 0.5px !important;
 }
 
+/* Fix for standalone header overlap */
 .sv-standalone-header {
     margin-bottom: 20px !important;
     margin-top: 40px !important;
+    clear: both !important;
+    position: relative !important;
+    z-index: 2 !important;
 }
 
 /* Section Indicators */
