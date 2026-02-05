@@ -1,0 +1,421 @@
+/* Site Vitals Modern Dashboard Styles */
+
+/* Dashboard Body */
+.sv-dashboard-wrap {
+    background-color: #f0f2f5 !important;
+    margin: 0 0 0 -20px !important;
+    padding: 1.5rem 1.5rem 2rem 0 !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+}
+
+/* Header */
+.sv-header {
+    margin-bottom: 1.5rem !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: flex-end !important;
+    max-width: 100% !important;
+}
+
+.sv-header h1 {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    margin: 0 0 0.25rem 0 !important;
+    padding: 0 !important;
+}
+
+.sv-subtitle {
+    color: #64748b !important;
+    font-size: 0.875rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Grid System */
+.sv-grid {
+    display: grid !important;
+    gap: 1.25rem !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.sv-grid-2col {
+    grid-template-columns: 1fr 1fr !important;
+}
+
+.sv-grid-3col {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+@media (max-width: 1280px) {
+    .sv-grid-2col {
+        gap: 1rem !important;
+    }
+    .sv-grid-3col {
+        gap: 1rem !important;
+    }
+}
+
+@media (max-width: 1024px) {
+    .sv-grid-2col {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .sv-dashboard-wrap {
+        padding: 1rem 1rem 1.5rem 0 !important;
+        margin: 0 !important;
+    }
+    
+    .sv-grid {
+        gap: 0.75rem !important;
+    }
+    
+    .sv-grid-3col {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* Section Container */
+.sv-section-container {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 1.25rem !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+/* Section Headers */
+.sv-section-header {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 0.875rem !important;
+}
+
+.sv-section-header-with-badge {
+    justify-content: space-between !important;
+}
+
+.sv-section-title-group {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+}
+
+.sv-section-header h2 {
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    color: #475569 !important;
+    letter-spacing: 0.05em !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.sv-standalone-header {
+    margin-left: 0.25rem !important;
+    margin-bottom: 0.875rem !important;
+    margin-top: 1.5rem !important;
+}
+
+/* Section Indicators */
+.sv-section-indicator {
+    width: 0.25rem !important;
+    height: 1rem !important;
+    border-radius: 9999px !important;
+}
+
+.sv-indicator-blue {
+    background-color: #3b82f6 !important;
+}
+
+.sv-indicator-emerald {
+    background-color: #10b981 !important;
+}
+
+.sv-indicator-slate {
+    background-color: #94a3b8 !important;
+}
+
+/* Dashboard Cards */
+.sv-dashboard-card {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    padding: 0.875rem !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+}
+
+/* Metrics */
+.sv-metric-label {
+    color: #64748b !important;
+    font-size: 0.7rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.375rem !important;
+}
+
+.sv-metric-value {
+    color: #0f172a !important;
+    font-size: 1.75rem !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    margin-bottom: 0.25rem !important;
+}
+
+.sv-metric-subtitle {
+    color: #94a3b8 !important;
+    font-size: 0.625rem !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+    margin-top: 0.25rem !important;
+}
+
+/* Status Pills */
+.sv-status-pill {
+    background: #ecfdf5;
+    color: #059669;
+    font-size: 10px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    border: 1px solid #d1fae5;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.sv-status-pill.sv-status-offline {
+    background: #fef2f2;
+    color: #dc2626;
+    border-color: #fecaca;
+}
+
+.sv-status-pill.sv-status-disabled {
+    background: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+}
+
+.sv-status-dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background-color: currentColor;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Uptime Specific */
+.sv-uptime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.sv-uptime-percentage {
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: #059669;
+}
+
+.sv-response-time {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.sv-response-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.sv-response-label {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-bottom: 0.375rem;
+    font-weight: 700;
+}
+
+/* Health Bars */
+.sv-health-bar {
+    height: 4px;
+    width: 100%;
+    background: #e2e8f0;
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
+
+.sv-health-bar-fill {
+    height: 100%;
+    background: #10b981;
+    transition: width 0.3s ease;
+}
+
+/* Disabled Message */
+.sv-disabled-message {
+    padding: 1.5rem 1rem !important;
+    text-align: center !important;
+}
+
+.sv-disabled-message p {
+    color: #64748b !important;
+    font-style: italic !important;
+    margin: 0 !important;
+}
+
+.sv-disabled-message a {
+    color: #2271b1 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+}
+
+.sv-disabled-message a:hover {
+    text-decoration: underline !important;
+}
+
+/* Statistics Cards */
+.sv-stat-card {
+    background: #ffffff !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.sv-stat-header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 0.625rem 1rem !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    color: #64748b !important;
+    letter-spacing: 0.025em !important;
+}
+
+/* Tables */
+.sv-table {
+    width: 100% !important;
+    font-size: 0.75rem !important;
+    table-layout: fixed !important;
+}
+
+.sv-table tr {
+    border-bottom: 1px solid #f1f5f9 !important;
+}
+
+.sv-table tr:last-child {
+    border-bottom: none !important;
+}
+
+.sv-table tr:hover {
+    background-color: #f8fafc !important;
+}
+
+.sv-table td {
+    padding: 0.75rem 1rem !important;
+    word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
+}
+
+.sv-table-cell-primary {
+    color: #475569 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    width: 70% !important;
+}
+
+.sv-table-cell-secondary {
+    text-align: right !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    width: 30% !important;
+    white-space: nowrap !important;
+}
+
+/* Device Cells */
+.sv-device-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sv-device-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    flex-shrink: 0;
+}
+
+.sv-dot-blue {
+    background-color: #60a5fa;
+}
+
+.sv-dot-emerald {
+    background-color: #34d399;
+}
+
+.sv-dot-amber {
+    background-color: #fbbf24;
+}
+
+.sv-dot-slate {
+    background-color: #94a3b8;
+}
+
+/* Empty State */
+.sv-empty-state {
+    padding: 1.5rem 1rem !important;
+    text-align: center !important;
+    flex-grow: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.sv-empty-state p {
+    font-size: 0.75rem !important;
+    color: #94a3b8 !important;
+    font-style: italic !important;
+    margin: 0 !important;
+}
+
+/* WordPress Admin Compatibility */
+.wrap.sv-dashboard-wrap {
+    margin-left: -20px;
+    margin-right: -20px;
+}
+
+#wpbody-content .sv-dashboard-wrap {
+    padding-bottom: 4rem;
+}
