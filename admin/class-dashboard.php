@@ -52,7 +52,7 @@ class Site_Vitals_Dashboard {
         <div class="wrap sv-dashboard-wrap">
             <!-- Header -->
             <div class="sv-header">
-                <h1><?php _e('Site Vitals Dashboard', 'vital-statistics'); ?></h1>
+                <h1><?php _e('Vital Statistics Dashboard', 'vital-statistics'); ?></h1>
                 <p class="sv-subtitle"><?php _e('Real-time performance and audience overview', 'vital-statistics'); ?></p>
             </div>
 
@@ -106,7 +106,7 @@ class Site_Vitals_Dashboard {
                     <?php if ($uptime_enabled): ?>
                         <div class="sv-grid sv-grid-2col">
                             <!-- NOW Block -->
-                            <div class="sv-dashboard-card">
+                            <div class="sv-dashboard-card sv-uptime-card">
                                 <div class="sv-uptime-header">
                                     <div class="sv-metric-label"><?php _e('NOW', 'vital-statistics'); ?></div>
                                     <div class="sv-uptime-percentage">100% <?php _e('UP', 'vital-statistics'); ?></div>
@@ -121,7 +121,7 @@ class Site_Vitals_Dashboard {
                             </div>
 
                             <!-- 7 Days Block -->
-                            <div class="sv-dashboard-card">
+                            <div class="sv-dashboard-card sv-uptime-card">
                                 <div class="sv-uptime-header">
                                     <div class="sv-metric-label"><?php _e('7 DAY AVG', 'vital-statistics'); ?></div>
                                     <div class="sv-uptime-percentage"><?php echo esc_html($uptime_percentage); ?>% <?php _e('UP', 'vital-statistics'); ?></div>
@@ -147,93 +147,94 @@ class Site_Vitals_Dashboard {
                 </div>
             </div>
 
-            <!-- Statistics Section Header -->
-            <div class="sv-section-header sv-standalone-header">
-                <div class="sv-section-indicator sv-indicator-slate"></div>
-                <h2><?php _e('STATISTICS (7 DAYS)', 'vital-statistics'); ?></h2>
-            </div>
-
-            <!-- 3-Card Statistics Section -->
-            <div class="sv-grid sv-grid-3col">
-                <!-- Card 1: Top Pages -->
-                <div class="sv-stat-card">
-                    <div class="sv-stat-header"><?php _e('TOP PAGES', 'vital-statistics'); ?></div>
-                    <?php if (!empty($top_pages)): ?>
-                        <table class="sv-table">
-                            <tbody>
-                                <?php foreach ($top_pages as $page): ?>
-                                    <tr>
-                                        <td class="sv-table-cell-primary"><?php echo esc_html(parse_url($page['page_url'], PHP_URL_PATH)); ?></td>
-                                        <td class="sv-table-cell-secondary"><?php echo esc_html($page['views']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php else: ?>
-                        <div class="sv-empty-state">
-                            <p><?php _e('No page data found', 'vital-statistics'); ?></p>
-                        </div>
-                    <?php endif; ?>
+            <!-- Statistics Section -->
+            <div class="sv-section-container sv-standalone-section">
+                <div class="sv-section-header">
+                    <div class="sv-section-indicator sv-indicator-slate"></div>
+                    <h2><?php _e('STATISTICS (7 DAYS)', 'vital-statistics'); ?></h2>
                 </div>
 
-                <!-- Card 2: Referrers -->
-                <div class="sv-stat-card">
-                    <div class="sv-stat-header"><?php _e('TOP REFERRERS', 'vital-statistics'); ?></div>
-                    <?php if (!empty($top_referrers)): ?>
-                        <table class="sv-table">
-                            <tbody>
-                                <?php foreach ($top_referrers as $referrer): 
-                                    $ref_url = $referrer['referrer'];
-                                    $host = parse_url($ref_url, PHP_URL_HOST);
-                                    $display = $host ? $host : __('Direct / Unknown', 'vital-statistics');
-                                ?>
-                                    <tr>
-                                        <td class="sv-table-cell-primary" title="<?php echo esc_attr($ref_url); ?>"><?php echo esc_html($display); ?></td>
-                                        <td class="sv-table-cell-secondary"><?php echo esc_html($referrer['visits']); ?></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php else: ?>
-                        <div class="sv-empty-state">
-                            <p><?php _e('No referrer data found', 'vital-statistics'); ?></p>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                <div class="sv-grid sv-grid-3col">
+                    <!-- Card 1: Top Pages -->
+                    <div class="sv-stat-card">
+                        <div class="sv-stat-header"><?php _e('TOP PAGES', 'vital-statistics'); ?></div>
+                        <?php if (!empty($top_pages)): ?>
+                            <table class="sv-table">
+                                <tbody>
+                                    <?php foreach ($top_pages as $page): ?>
+                                        <tr>
+                                            <td class="sv-table-cell-primary"><?php echo esc_html(parse_url($page['page_url'], PHP_URL_PATH)); ?></td>
+                                            <td class="sv-table-cell-secondary"><?php echo esc_html($page['views']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="sv-empty-state">
+                                <p><?php _e('No page data found', 'vital-statistics'); ?></p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
 
-                <!-- Card 3: Devices -->
-                <div class="sv-stat-card">
-                    <div class="sv-stat-header"><?php _e('DEVICES', 'vital-statistics'); ?></div>
-                    <?php if (!empty($device_stats)): ?>
-                        <table class="sv-table">
-                            <tbody>
-                                <?php 
-                                $device_icons = array(
-                                    'desktop' => 'sv-dot-blue',
-                                    'mobile' => 'sv-dot-emerald',
-                                    'tablet' => 'sv-dot-amber'
-                                );
-                                foreach ($device_stats as $device): 
-                                    $device_type = $device['device_type'];
-                                    $icon_class = isset($device_icons[$device_type]) ? $device_icons[$device_type] : 'sv-dot-slate';
-                                ?>
-                                    <tr>
-                                        <td class="sv-table-cell-primary sv-device-cell">
-                                            <span class="sv-device-dot <?php echo esc_attr($icon_class); ?>"></span>
-                                            <?php echo esc_html(ucfirst($device_type)); ?>
-                                        </td>
-                                        <td class="sv-table-cell-secondary">
-                                            <?php echo esc_html(isset($device_percentages[$device_type]) ? $device_percentages[$device_type] : 0); ?>%
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php else: ?>
-                        <div class="sv-empty-state">
-                            <p><?php _e('No device data found', 'vital-statistics'); ?></p>
-                        </div>
-                    <?php endif; ?>
+                    <!-- Card 2: Referrers -->
+                    <div class="sv-stat-card">
+                        <div class="sv-stat-header"><?php _e('TOP REFERRERS', 'vital-statistics'); ?></div>
+                        <?php if (!empty($top_referrers)): ?>
+                            <table class="sv-table">
+                                <tbody>
+                                    <?php foreach ($top_referrers as $referrer): 
+                                        $ref_url = $referrer['referrer'];
+                                        $host = parse_url($ref_url, PHP_URL_HOST);
+                                        $display = $host ? $host : __('Direct / Unknown', 'vital-statistics');
+                                    ?>
+                                        <tr>
+                                            <td class="sv-table-cell-primary" title="<?php echo esc_attr($ref_url); ?>"><?php echo esc_html($display); ?></td>
+                                            <td class="sv-table-cell-secondary"><?php echo esc_html($referrer['visits']); ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="sv-empty-state">
+                                <p><?php _e('No referrer data found', 'vital-statistics'); ?></p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- Card 3: Devices -->
+                    <div class="sv-stat-card">
+                        <div class="sv-stat-header"><?php _e('DEVICES', 'vital-statistics'); ?></div>
+                        <?php if (!empty($device_stats)): ?>
+                            <table class="sv-table">
+                                <tbody>
+                                    <?php 
+                                    $device_icons = array(
+                                        'desktop' => 'sv-dot-blue',
+                                        'mobile' => 'sv-dot-emerald',
+                                        'tablet' => 'sv-dot-amber'
+                                    );
+                                    foreach ($device_stats as $device): 
+                                        $device_type = $device['device_type'];
+                                        $icon_class = isset($device_icons[$device_type]) ? $device_icons[$device_type] : 'sv-dot-slate';
+                                    ?>
+                                        <tr>
+                                            <td class="sv-table-cell-primary sv-device-cell">
+                                                <span class="sv-device-dot <?php echo esc_attr($icon_class); ?>"></span>
+                                                <?php echo esc_html(ucfirst($device_type)); ?>
+                                            </td>
+                                            <td class="sv-table-cell-secondary">
+                                                <?php echo esc_html(isset($device_percentages[$device_type]) ? $device_percentages[$device_type] : 0); ?>%
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php else: ?>
+                            <div class="sv-empty-state">
+                                <p><?php _e('No device data found', 'vital-statistics'); ?></p>
+                            </div>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>

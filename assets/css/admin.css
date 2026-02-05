@@ -9,7 +9,7 @@
 .sv-dashboard-wrap {
     background-color: #f0f4f8 !important;
     margin: -20px -20px 0 -20px !important; 
-    padding: 30px !important;
+    padding: 25px !important;
     min-height: calc(100vh - 32px) !important;
     width: auto !important;
     max-width: none !important;
@@ -21,20 +21,20 @@
 
 /* Header */
 .sv-header {
-    margin-bottom: 25px !important;
+    margin-bottom: 20px !important;
 }
 
 .sv-header h1 {
-    font-size: 22px !important;
+    font-size: 20px !important;
     font-weight: 700 !important;
     color: #1e293b !important;
-    margin: 0 0 4px 0 !important;
+    margin: 0 0 2px 0 !important;
     padding: 0 !important;
 }
 
 .sv-subtitle {
     color: #64748b !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
     margin: 0 !important;
     padding: 0 !important;
 }
@@ -42,7 +42,7 @@
 /* Grid System */
 .sv-grid {
     display: grid !important;
-    gap: 20px !important;
+    gap: 15px !important;
     width: 100% !important;
 }
 
@@ -65,10 +65,14 @@
     background: #ffffff !important;
     border-radius: 10px !important;
     border: 1px solid #e2e8f0 !important;
-    padding: 20px !important;
+    padding: 15px !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
     display: flex !important;
     flex-direction: column !important;
+}
+
+.sv-standalone-section {
+    margin-top: 20px !important;
 }
 
 /* Section Headers */
@@ -90,18 +94,13 @@
 }
 
 .sv-section-header h2 {
-    font-size: 13px !important;
+    font-size: 12px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     color: #334155 !important;
     margin: 0 !important;
     padding: 0 !important;
     letter-spacing: 0.5px !important;
-}
-
-.sv-standalone-header {
-    margin-bottom: 15px !important;
-    margin-top: 30px !important;
 }
 
 /* Section Indicators */
@@ -120,44 +119,50 @@
     background: #f8fafc !important;
     border: 1px solid #edf2f7 !important;
     border-radius: 6px !important;
-    padding: 15px !important;
+    padding: 12px !important;
+    position: relative !important;
+}
+
+.sv-uptime-card {
+    padding-bottom: 15px !important;
 }
 
 /* Metrics */
 .sv-metric-label {
     color: #64748b !important;
-    font-size: 10px !important;
+    font-size: 9px !important;
     text-transform: uppercase !important;
     font-weight: 600 !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 5px !important;
 }
 
 .sv-metric-value {
     color: #0f172a !important;
-    font-size: 28px !important;
+    font-size: 24px !important;
     font-weight: 700 !important;
     line-height: 1 !important;
 }
 
 .sv-metric-subtitle {
     color: #94a3b8 !important;
-    font-size: 10px !important;
-    margin-top: 8px !important;
+    font-size: 9px !important;
+    margin-top: 5px !important;
     font-weight: 600 !important;
+    text-transform: uppercase !important;
 }
 
 /* Status Pills */
 .sv-status-pill {
     background: #f0fdf4;
     color: #16a34a;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: 9999px;
     border: 1px solid #dcfce7;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
 }
 
 .sv-status-pill.sv-status-offline {
@@ -167,8 +172,8 @@
 }
 
 .sv-status-dot {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background-color: currentColor;
 }
@@ -178,40 +183,44 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
 .sv-uptime-percentage {
-    font-size: 11px;
+    font-size: 9px;
     font-weight: 700;
     color: #16a34a;
+    text-transform: uppercase;
 }
 
 .sv-response-time {
     display: flex;
     align-items: baseline;
     gap: 4px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
 }
 
 .sv-response-value {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 700;
     color: #1e293b;
 }
 
 .sv-response-label {
-    font-size: 12px;
+    font-size: 11px;
     color: #94a3b8;
 }
 
 /* Health Bars */
 .sv-health-bar {
-    height: 4px;
-    width: 100%;
+    height: 3px;
+    width: calc(100% - 24px);
     background: #e2e8f0;
     border-radius: 2px;
     overflow: hidden;
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
 }
 
 .sv-health-bar-fill {
@@ -221,20 +230,19 @@
 
 /* Statistics Cards */
 .sv-stat-card {
-    background: #ffffff !important;
-    border-radius: 10px !important;
-    border: 1px solid #e2e8f0 !important;
+    background: #f8fafc !important;
+    border-radius: 8px !important;
+    border: 1px solid #edf2f7 !important;
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
 .sv-stat-header {
     background: #f8fafc !important;
     border-bottom: 1px solid #edf2f7 !important;
-    padding: 12px 15px !important;
-    font-size: 10px !important;
+    padding: 10px 12px !important;
+    font-size: 9px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     color: #64748b !important;
@@ -248,9 +256,9 @@
 }
 
 .sv-table td {
-    padding: 12px 15px !important;
+    padding: 10px 12px !important;
     border-bottom: 1px solid #f1f5f9 !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
 }
 
 .sv-table tr:last-child td {
@@ -271,12 +279,12 @@
 .sv-device-cell {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .sv-device-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
 }
 
@@ -287,9 +295,9 @@
 
 /* Empty State */
 .sv-empty-state {
-    padding: 30px 15px !important;
+    padding: 25px 12px !important;
     text-align: center !important;
     color: #94a3b8 !important;
     font-style: italic !important;
-    font-size: 12px !important;
+    font-size: 11px !important;
 }
