@@ -47,22 +47,13 @@ class Site_Vitals_Dashboard {
                 ? round(($device['count'] / $total_devices) * 100) 
                 : 0;
         }
-
-        // Get current user for greeting
-        $current_user = wp_get_current_user();
-        $display_name = $current_user->display_name ? $current_user->display_name : 'Dolly';
         
         ?>
         <div class="wrap sv-dashboard-wrap">
             <!-- Header -->
             <div class="sv-header">
-                <div>
-                    <h1><?php _e('Vital Statistics Dashboard', 'vital-statistics'); ?></h1>
-                    <p class="sv-subtitle"><?php _e('Real-time performance and audience overview', 'vital-statistics'); ?></p>
-                </div>
-                <div class="sv-header-greeting">
-                    <?php printf(__('You’re lookin’ swell, %s', 'vital-statistics'), esc_html($display_name)); ?>
-                </div>
+                <h1><?php _e('Site Vitals Dashboard', 'vital-statistics'); ?></h1>
+                <p class="sv-subtitle"><?php _e('Real-time performance and audience overview', 'vital-statistics'); ?></p>
             </div>
 
             <!-- Top Row: Audience & Uptime -->
@@ -72,23 +63,23 @@ class Site_Vitals_Dashboard {
                 <div class="sv-section-container">
                     <div class="sv-section-header">
                         <div class="sv-section-indicator sv-indicator-blue"></div>
-                        <h2><?php _e('Audience Visitors', 'vital-statistics'); ?></h2>
+                        <h2><?php _e('AUDIENCE VISITORS', 'vital-statistics'); ?></h2>
                     </div>
                     <div class="sv-grid sv-grid-3col">
                         <div class="sv-dashboard-card">
                             <div class="sv-metric-label"><?php _e('NOW', 'vital-statistics'); ?></div>
                             <div class="sv-metric-value"><?php echo esc_html($current_visitors); ?></div>
-                            <div class="sv-metric-subtitle"><?php _e('Last 30 mins', 'vital-statistics'); ?></div>
+                            <div class="sv-metric-subtitle"><?php _e('LAST 30 MINS', 'vital-statistics'); ?></div>
                         </div>
                         <div class="sv-dashboard-card">
                             <div class="sv-metric-label"><?php _e('TODAY', 'vital-statistics'); ?></div>
                             <div class="sv-metric-value"><?php echo esc_html($today_visitors); ?></div>
-                            <div class="sv-metric-subtitle"><?php _e('Uniques', 'vital-statistics'); ?></div>
+                            <div class="sv-metric-subtitle"><?php _e('UNIQUES', 'vital-statistics'); ?></div>
                         </div>
                         <div class="sv-dashboard-card">
                             <div class="sv-metric-label"><?php _e('7 DAYS', 'vital-statistics'); ?></div>
                             <div class="sv-metric-value"><?php echo esc_html($week_visitors); ?></div>
-                            <div class="sv-metric-subtitle"><?php _e('Uniques', 'vital-statistics'); ?></div>
+                            <div class="sv-metric-subtitle"><?php _e('UNIQUES', 'vital-statistics'); ?></div>
                         </div>
                     </div>
                 </div>
@@ -98,7 +89,7 @@ class Site_Vitals_Dashboard {
                     <div class="sv-section-header sv-section-header-with-badge">
                         <div class="sv-section-title-group">
                             <div class="sv-section-indicator sv-indicator-emerald"></div>
-                            <h2><?php _e('System Uptime', 'vital-statistics'); ?></h2>
+                            <h2><?php _e('SYSTEM UPTIME', 'vital-statistics'); ?></h2>
                         </div>
                         <?php if ($uptime_enabled): ?>
                             <span class="sv-status-pill sv-status-<?php echo esc_attr($uptime_status['status']); ?>">

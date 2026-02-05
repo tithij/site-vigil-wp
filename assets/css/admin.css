@@ -7,8 +7,7 @@
 
 /* Dashboard Body - Full Bleed Layout */
 .sv-dashboard-wrap {
-    background-color: #f0f2f5 !important;
-    /* Negate WP admin padding and ensure it fills the width */
+    background-color: #f0f4f8 !important;
     margin: -20px -20px 0 -20px !important; 
     padding: 30px !important;
     min-height: calc(100vh - 32px) !important;
@@ -22,30 +21,22 @@
 
 /* Header */
 .sv-header {
-    margin-bottom: 30px !important;
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: flex-start !important;
+    margin-bottom: 25px !important;
 }
 
 .sv-header h1 {
-    font-size: 24px !important;
-    font-weight: 400 !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
     color: #1e293b !important;
-    margin: 0 0 5px 0 !important;
+    margin: 0 0 4px 0 !important;
     padding: 0 !important;
 }
 
 .sv-subtitle {
     color: #64748b !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
     margin: 0 !important;
     padding: 0 !important;
-}
-
-.sv-header-greeting {
-    color: #475569 !important;
-    font-size: 14px !important;
 }
 
 /* Grid System */
@@ -63,13 +54,7 @@
     grid-template-columns: repeat(3, 1fr) !important;
 }
 
-@media (max-width: 1400px) {
-    .sv-grid-3col {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-}
-
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
     .sv-grid-2col, .sv-grid-3col {
         grid-template-columns: 1fr !important;
     }
@@ -78,11 +63,10 @@
 /* Section Container */
 .sv-section-container {
     background: #ffffff !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     border: 1px solid #e2e8f0 !important;
-    padding: 25px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
-    height: auto !important; /* Allow container to grow with content */
+    padding: 20px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
     display: flex !important;
     flex-direction: column !important;
 }
@@ -91,8 +75,8 @@
 .sv-section-header {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
-    margin-bottom: 20px !important;
+    gap: 10px !important;
+    margin-bottom: 15px !important;
 }
 
 .sv-section-header-with-badge {
@@ -102,81 +86,78 @@
 .sv-section-title-group {
     display: flex !important;
     align-items: center !important;
-    gap: 12px !important;
+    gap: 10px !important;
 }
 
 .sv-section-header h2 {
-    font-size: 14px !important;
-    font-weight: 600 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
     text-transform: uppercase !important;
-    color: #475569 !important;
+    color: #334155 !important;
     margin: 0 !important;
     padding: 0 !important;
     letter-spacing: 0.5px !important;
 }
 
-/* Fix for standalone header overlap */
 .sv-standalone-header {
-    margin-bottom: 20px !important;
-    margin-top: 40px !important;
-    clear: both !important;
-    position: relative !important;
-    z-index: 2 !important;
+    margin-bottom: 15px !important;
+    margin-top: 30px !important;
 }
 
 /* Section Indicators */
 .sv-section-indicator {
-    width: 4px !important;
-    height: 18px !important;
+    width: 3px !important;
+    height: 14px !important;
     border-radius: 2px !important;
 }
 
 .sv-indicator-blue { background-color: #3b82f6 !important; }
 .sv-indicator-emerald { background-color: #10b981 !important; }
-.sv-indicator-slate { background-color: #94a3b8 !important; }
+.sv-indicator-slate { background-color: #64748b !important; }
 
 /* Dashboard Cards */
 .sv-dashboard-card {
     background: #f8fafc !important;
-    border: 1px solid #f1f5f9 !important;
-    border-radius: 8px !important;
-    padding: 20px !important;
+    border: 1px solid #edf2f7 !important;
+    border-radius: 6px !important;
+    padding: 15px !important;
 }
 
 /* Metrics */
 .sv-metric-label {
-    color: #475569 !important;
-    font-size: 11px !important;
+    color: #64748b !important;
+    font-size: 10px !important;
     text-transform: uppercase !important;
-    font-weight: 700 !important;
-    margin-bottom: 10px !important;
+    font-weight: 600 !important;
+    margin-bottom: 8px !important;
 }
 
 .sv-metric-value {
     color: #0f172a !important;
-    font-size: 32px !important;
+    font-size: 28px !important;
     font-weight: 700 !important;
     line-height: 1 !important;
 }
 
 .sv-metric-subtitle {
     color: #94a3b8 !important;
-    font-size: 12px !important;
-    margin-top: 10px !important;
+    font-size: 10px !important;
+    margin-top: 8px !important;
+    font-weight: 600 !important;
 }
 
 /* Status Pills */
 .sv-status-pill {
-    background: #ecfdf5;
-    color: #059669;
-    font-size: 11px;
+    background: #f0fdf4;
+    color: #16a34a;
+    font-size: 10px;
     font-weight: 700;
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 9999px;
-    border: 1px solid #d1fae5;
+    border: 1px solid #dcfce7;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .sv-status-pill.sv-status-offline {
@@ -185,15 +166,9 @@
     border-color: #fecaca;
 }
 
-.sv-status-pill.sv-status-disabled {
-    background: #f1f5f9;
-    color: #64748b;
-    border-color: #e2e8f0;
-}
-
 .sv-status-dot {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background-color: currentColor;
 }
@@ -203,39 +178,39 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
 
 .sv-uptime-percentage {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
-    color: #10b981;
+    color: #16a34a;
 }
 
 .sv-response-time {
     display: flex;
     align-items: baseline;
-    gap: 5px;
-    margin-bottom: 15px;
+    gap: 4px;
+    margin-bottom: 12px;
 }
 
 .sv-response-value {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
     color: #1e293b;
 }
 
 .sv-response-label {
-    font-size: 13px;
+    font-size: 12px;
     color: #94a3b8;
 }
 
 /* Health Bars */
 .sv-health-bar {
-    height: 6px;
+    height: 4px;
     width: 100%;
     background: #e2e8f0;
-    border-radius: 3px;
+    border-radius: 2px;
     overflow: hidden;
 }
 
@@ -247,22 +222,22 @@
 /* Statistics Cards */
 .sv-stat-card {
     background: #ffffff !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     border: 1px solid #e2e8f0 !important;
     overflow: hidden !important;
     display: flex !important;
     flex-direction: column !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03) !important;
 }
 
 .sv-stat-header {
-    background: #ffffff !important;
-    border-bottom: 1px solid #f1f5f9 !important;
-    padding: 15px 20px !important;
-    font-size: 11px !important;
+    background: #f8fafc !important;
+    border-bottom: 1px solid #edf2f7 !important;
+    padding: 12px 15px !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
-    color: #475569 !important;
+    color: #64748b !important;
     letter-spacing: 0.5px !important;
 }
 
@@ -273,9 +248,9 @@
 }
 
 .sv-table td {
-    padding: 15px 20px !important;
+    padding: 12px 15px !important;
     border-bottom: 1px solid #f1f5f9 !important;
-    font-size: 13px !important;
+    font-size: 12px !important;
 }
 
 .sv-table tr:last-child td {
@@ -289,7 +264,7 @@
 .sv-table-cell-secondary {
     text-align: right !important;
     font-weight: 700 !important;
-    color: #0f172a !important;
+    color: #1e293b !important;
 }
 
 /* Device Cells */
@@ -300,8 +275,8 @@
 }
 
 .sv-device-dot {
-    width: 8px;
-    height: 8px;
+    width: 7px;
+    height: 7px;
     border-radius: 50%;
 }
 
@@ -312,7 +287,9 @@
 
 /* Empty State */
 .sv-empty-state {
-    padding: 40px 20px !important;
+    padding: 30px 15px !important;
     text-align: center !important;
     color: #94a3b8 !important;
+    font-style: italic !important;
+    font-size: 12px !important;
 }
