@@ -1,32 +1,38 @@
-=== Site Vitals - Website Health Dashboard ===
-Contributors: yourname
-Tags: analytics, monitoring, uptime, visitors, statistics
+=== Site Vigil ===
+Contributors: sitevigil
+Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 
-Simple website monitoring with uptime checks and privacy-friendly visitor analytics.
+Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
 
 == Description ==
 
-Site Vitals is an all-in-one website health dashboard that combines uptime monitoring and privacy-friendly visitor analytics.
+Site Vigil monitors your site's uptime, SSL/domain expiry, and visitor traffic
+from Cloudflare's edge — this plugin never checks the site itself, it only
+injects a small visitor-tracking snippet and, once connected, shows a
+read-only summary of what Site Vigil already knows about your site.
 
 **Features:**
-* Real-time visitor tracking
-* Uptime monitoring
-* Privacy-friendly (GDPR compliant)
-* Simple analytics
-* Easy setup
+* Privacy-friendly visitor tracking snippet
+* Connect to your Site Vigil dashboard (automatic or via pairing code)
+* At-a-glance status widget: uptime, last incident, SSL/domain expiry, traffic
 
 == Installation ==
 
-1. Upload the `site-vitals` folder to `/wp-content/plugins/`
+1. Upload the plugin to `/wp-content/plugins/site-vigil`
 2. Activate the plugin
-3. Visit 'Site Vitals' in your admin menu
+3. Go to Settings → Site Vigil to set your tracking ID and connect the plugin
+   to your Site Vigil account
 
 == Changelog ==
 
-= 1.0.0 =
-* Initial release
+= 0.2.0 =
+* Added the connect handshake (automatic + pairing code) and the read-only
+  site-summary widget
+
+= 0.1.0 =
+* Initial release: tracking snippet + tracking ID setting
