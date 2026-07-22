@@ -1,0 +1,12 @@
+.git
+.github
+.gitignore
+.distignore
+README.md
+SECURITY.md
+LICENSE
+build.sh
+build.ps1
+dist
+*.example
+node_modules

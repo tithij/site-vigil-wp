@@ -3,7 +3,7 @@
  * Plugin Name: Site Vigil
  * Plugin URI: https://site-vigil.com
  * Description: Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
- * Version: 0.2.0
+ * Version: 0.3.0
  * Author: Site Vigil
  * License: GPL v2 or later
  */
@@ -12,11 +12,25 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SITE_VIGIL_VERSION', '0.2.0' );
+define( 'SITE_VIGIL_VERSION', '0.3.0' );
 define( 'SITE_VIGIL_OPTION_KEY', 'site_vigil_tracking_id' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-connector.php';
 Site_Vigil_Connector::init();
+
+// Self-hosted auto-updates via GitHub Releases (spec §9.2) — no WP.org
+// listing exists, so without this the plugin would never notify admins of
+// new versions. Points at release *assets* (the built, .distignore-clean
+// zip), not GitHub's auto-generated source archive.
+require_once plugin_dir_path( __FILE__ ) . 'includes/plugin-update-checker/plugin-update-checker.php';
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$site_vigil_update_checker = PucFactory::buildUpdateChecker(
+    'https://github.com/tithij/site-vigil-wp/',
+    __FILE__,
+    'site-vigil'
+);
+$site_vigil_update_checker->getVcsApi()->enableReleaseAssets( '/^site-vigil-wp-.*\.zip$/i' );
 
 add_action( 'admin_menu', 'site_vigil_add_settings_page' );
 function site_vigil_add_settings_page() {

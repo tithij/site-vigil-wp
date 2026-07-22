@@ -1,0 +1,40 @@
+name: Release
+
+# Tag push (e.g. `v0.3.0`) is the trigger for a public release — pushes to
+# main never publish anything on their own. Keep the tag's version in sync
+# with the `Version:` header in site-vigil.php and `Stable tag:` in
+# readme.txt before tagging (see README/CONTRIBUTING notes).
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check tag matches plugin Version / Stable tag
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PHP_VERSION="$(grep -m1 -oE '^ \* Version:\s*[0-9][^[:space:]]*' site-vigil.php | sed -E 's/^ \* Version:\s*//')"
+          README_VERSION="$(grep -m1 -oE '^Stable tag:\s*[0-9][^[:space:]]*' readme.txt | sed -E 's/^Stable tag:\s*//')"
+          if [ "$TAG_VERSION" != "$PHP_VERSION" ] || [ "$TAG_VERSION" != "$README_VERSION" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match site-vigil.php Version ($PHP_VERSION) and/or readme.txt Stable tag ($README_VERSION)" >&2
+            exit 1
+          fi
+
+      - name: Build plugin zip
+        run: |
+          chmod +x build.sh
+          ./build.sh
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
