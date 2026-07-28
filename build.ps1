@@ -32,7 +32,27 @@ Get-ChildItem -Path $root -Force | Where-Object {
     Copy-Item -Path $_.FullName -Destination (Join-Path $stage $_.Name) -Recurse -Force
 }
 
-Compress-Archive -Path "$stage" -DestinationPath $dest
+# Build the zip manually with System.IO.Compression instead of
+# Compress-Archive: on Windows, Compress-Archive writes backslashes as the
+# path separator inside zip entries (and emits an explicit entry for any
+# directory that contains only subdirectories, e.g. .../Puc). The zip format
+# requires forward slashes, and an entry ending in "\" isn't recognized as a
+# directory marker, so WordPress's installer tries to extract it as a file
+# named "...Puc\" and fails with "Could not copy file.". Adding only file
+# entries with normalized "/" paths sidesteps both problems - extractors
+# create parent directories implicitly from the file paths.
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+$zip = [System.IO.Compression.ZipFile]::Open($dest, [System.IO.Compression.ZipArchiveMode]::Create)
+try {
+    Get-ChildItem -Path $stageRoot -Recurse -File | ForEach-Object {
+        $relativePath = $_.FullName.Substring($stageRoot.Length + 1) -replace '\\', '/'
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $relativePath) | Out-Null
+    }
+} finally {
+    $zip.Dispose()
+}
 Remove-Item -Recurse -Force $stageRoot
 
 Write-Host "Package created: $dest"

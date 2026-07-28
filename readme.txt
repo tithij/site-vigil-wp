@@ -4,7 +4,7 @@ Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.3.0
+Stable tag: 0.3.1
 License: GPLv2 or later
 
 Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
@@ -29,6 +29,11 @@ read-only summary of what Site Vigil already knows about your site.
    to your Site Vigil account
 
 == Changelog ==
+
+= 0.3.1 =
+* Redesigned the Connector settings screen: status badge, at-a-glance stat
+  tiles, and a collapsed pairing-code field instead of a plain table
+* "Connect automatically" now opens in a new tab
 
 = 0.3.0 =
 * Self-hosted auto-updates via GitHub Releases
