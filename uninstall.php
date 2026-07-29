@@ -19,3 +19,10 @@ delete_option( 'site_vigil_plugin_token' );
 delete_option( 'site_vigil_website_id' );
 delete_transient( 'site_vigil_summary_cache' );
 delete_transient( 'site_vigil_connect_error' );
+
+// Book-keeping written by the vendored plugin-update-checker library
+// (includes/plugin-update-checker/), keyed off the 'site-vigil' slug passed
+// to PucFactory::buildUpdateChecker() in site-vigil.php. PUC has no uninstall
+// hook of its own, so this plugin has to clean up after it.
+delete_option( 'external_updates-site-vigil' );
+delete_site_transient( 'puc_manual_check_errors-site-vigil' );

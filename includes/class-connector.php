@@ -45,20 +45,42 @@ class Site_Vigil_Connector {
     }
 
     public static function connect_url() {
+        // CSRF/account-linking guard: the redirect callback below is a real
+        // off-site browser redirect, so it can't use check_admin_referer()
+        // like the manual/disconnect/refresh actions do. Without this, a
+        // crafted admin_post.php?...&code=<attacker-owned-code> link would
+        // silently re-pair this site to the attacker's Site Vigil account —
+        // the `code` alone doesn't prove the callback followed a real
+        // connect_url() click by this admin. This state value does.
+        $state = wp_generate_password( 32, false );
+        set_transient( 'site_vigil_connect_state', $state, 5 * MINUTE_IN_SECONDS );
+
         $params = [
             'return_url'     => self::callback_url(),
             'site_url'       => home_url( '/' ),
             'plugin'         => 'wordpress',
             'plugin_version' => SITE_VIGIL_VERSION,
+            'state'          => $state,
         ];
         return self::APP_URL . '/connect?' . http_build_query( $params );
     }
 
-    /** Redirect-flow callback — the dashboard's /connect page sends the browser here with ?code=. */
+    /** Redirect-flow callback — the dashboard's /connect page sends the browser here with ?code=&state=. */
     public static function handle_redirect_callback() {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Forbidden', 403 );
         }
+
+        $expected_state = get_transient( 'site_vigil_connect_state' );
+        delete_transient( 'site_vigil_connect_state' );
+        $state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
+
+        if ( '' === $state || ! is_string( $expected_state ) || '' === $expected_state || ! hash_equals( $expected_state, $state ) ) {
+            set_transient( 'site_vigil_connect_error', 'Connect request expired or could not be verified — click "Connect automatically" again.', 60 );
+            wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
+            exit;
+        }
+
         $code = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
         self::exchange_and_store( $code );
         wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
