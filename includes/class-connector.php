@@ -298,7 +298,8 @@ class Site_Vigil_Connector {
         <div id="site-vigil-connector" class="svc-card">
             <div class="svc-brandbar">
                 <div class="svc-brandmark">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+                    <?php // Pulse-line mark from site-vigil-shared/brand/site-vigil-mark.svg, scaled to this 24x24 icon grid (replaces the earlier placeholder shield). ?>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="21.6,12 18,12 15,21 9,3 6,12 2.4,12"/></svg>
                 </div>
                 <span class="svc-brand-name">Site Vigil</span>
                 <?php if ( self::is_connected() && ! $show_connect_hero ) : ?>
