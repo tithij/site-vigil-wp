@@ -337,7 +337,7 @@ class Site_Vigil_Connector {
 
                 <div class="svc-fallback-note">
                     <?php echo self::icon( 'warn' ); ?>
-                    <div>Get these from Site Vigil (Sites → this site → "Connect manually") — you're already logged in there.</div>
+                    <div>Get these from Site Vigil (Administration → Sites → this site → CMS Plugin → "Connect manually") — you're already logged in there.</div>
                 </div>
 
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
