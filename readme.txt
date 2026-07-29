@@ -4,7 +4,7 @@ Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.4.4
+Stable tag: 0.4.5
 License: GPLv2 or later
 
 Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
@@ -29,6 +29,14 @@ read-only summary of what Site Vigil already knows about your site.
    to your Site Vigil account
 
 == Changelog ==
+
+= 0.4.5 =
+* Fixed a timezone bug in every "X ago" label ("Checked...", "Since...",
+  "All clear for..."): they were diffing a true-UTC API timestamp against
+  WordPress's current_time('timestamp'), which is silently shifted by the
+  site's UTC offset — on a UTC+2 site this added a spurious ~2 hours to
+  every displayed duration, even on data fetched moments ago. Now uses
+  time() (true UTC) throughout, matching strtotime()'s output.
 
 = 0.4.4 =
 * Shortened the client-side summary cache from 5 to 4 minutes, matching

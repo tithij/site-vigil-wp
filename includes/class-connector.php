@@ -432,9 +432,9 @@ class Site_Vigil_Connector {
             <span class="svc-status-text <?php echo esc_attr( $meta['class'] ); ?>"><?php echo esc_html( $meta['label'] ); ?></span>
             <span class="svc-status-meta">
                 <?php if ( 'OFFLINE' === $status && $last_incident ) : ?>
-                    Since <?php echo esc_html( human_time_diff( strtotime( $last_incident['started_at'] ), current_time( 'timestamp' ) ) ); ?> ago
+                    Since <?php echo esc_html( human_time_diff( strtotime( $last_incident['started_at'] ), time() ) ); ?> ago
                 <?php elseif ( ! empty( $summary['generated_at'] ) ) : ?>
-                    Checked <?php echo esc_html( human_time_diff( strtotime( $summary['generated_at'] ), current_time( 'timestamp' ) ) ); ?> ago
+                    Checked <?php echo esc_html( human_time_diff( strtotime( $summary['generated_at'] ), time() ) ); ?> ago
                 <?php endif; ?>
             </span>
         </div>
@@ -497,7 +497,7 @@ class Site_Vigil_Connector {
             <?php echo self::icon( 'check' ); ?>
             <?php if ( $last_incident ) : ?>
                 <?php $ended_at = strtotime( $last_incident['started_at'] ) + ( (int) $last_incident['duration_minutes'] * 60 ); ?>
-                All clear for <b><?php echo esc_html( human_time_diff( $ended_at, current_time( 'timestamp' ) ) ); ?></b>
+                All clear for <b><?php echo esc_html( human_time_diff( $ended_at, time() ) ); ?></b>
                 — last issue was a <?php echo esc_html( $last_incident['duration_minutes'] ); ?>&#8209;minute outage.
             <?php else : ?>
                 No incidents in the last 30 days.
