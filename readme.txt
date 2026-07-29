@@ -34,6 +34,8 @@ read-only summary of what Site Vigil already knows about your site.
 = 0.5.1 =
 * Replaced the placeholder shield brandmark in the settings-page header with
   the actual Site Vigil logo (the pulse-line mark)
+* Removed client-side handling for a 429 rate-limit response that the
+  backend no longer sends
 
 = 0.5.0 =
 * Added a wp-admin Dashboard widget showing the same live status card as

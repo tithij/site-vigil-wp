@@ -23,9 +23,9 @@ class Site_Vigil_Connector {
     const TOKEN_OPTION      = 'site_vigil_plugin_token';
     const WEBSITE_ID_OPTION = 'site_vigil_website_id';
     const SUMMARY_TRANSIENT = 'site_vigil_summary_cache';
-    // Matches get-site-summary's own 4-minute per-token rate limit exactly —
-    // any shorter and a reload would routinely hit 429 and just show the same
-    // cached data anyway; any longer pads staleness the backend doesn't need.
+    // The backend has no rate limit of its own — this TTL is the only thing
+    // controlling call frequency, so it's set to a value that keeps polling
+    // light without making the widget feel stale.
     const SUMMARY_TTL       = 240; // seconds
 
     public static function init() {
@@ -198,11 +198,6 @@ class Site_Vigil_Connector {
             delete_option( self::WEBSITE_ID_OPTION );
             delete_transient( self::SUMMARY_TRANSIENT );
             return [ 'disconnected' => true ];
-        }
-
-        if ( 429 === $status ) {
-            // Rate limited — show whatever was last cached rather than an error.
-            return false !== $cached ? $cached : [ 'error' => 'Rate limited — try refreshing again shortly.' ];
         }
 
         if ( 200 !== $status ) {
