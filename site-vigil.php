@@ -3,7 +3,7 @@
  * Plugin Name: Site Vigil
  * Plugin URI: https://site-vigil.com
  * Description: Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
- * Version: 0.4.0
+ * Version: 0.4.1
  * Author: Site Vigil
  * License: GPL v2 or later
  */
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SITE_VIGIL_VERSION', '0.4.0' );
+define( 'SITE_VIGIL_VERSION', '0.4.1' );
 define( 'SITE_VIGIL_OPTION_KEY', 'site_vigil_tracking_id' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-connector.php';

@@ -232,6 +232,7 @@ class Site_Vigil_Connector {
             'uptime'    => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/><path d="M12 8v4l3 3"/></svg>',
             'domain'    => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
             'ssl'       => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/></svg>',
+            'response'  => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M13 2 3 14h8l-1 8 10-12h-8l1-8z"/></svg>',
             'check'     => '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
             'arrow'     => '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
         ];
@@ -466,6 +467,14 @@ class Site_Vigil_Connector {
             <div class="svc-stat">
                 <span class="svc-stat__label"><?php echo self::icon( 'sessions' ); ?>Sessions today</span>
                 <span class="svc-stat__value"><?php echo esc_html( $summary['sessions_today'] ?? 0 ); ?></span>
+            </div>
+            <div class="svc-stat">
+                <span class="svc-stat__label"><?php echo self::icon( 'response' ); ?>Avg response</span>
+                <?php if ( isset( $summary['avg_response_ms'] ) && null !== $summary['avg_response_ms'] ) : ?>
+                    <span class="svc-stat__value"><?php echo esc_html( $summary['avg_response_ms'] ); ?><span class="svc-stat__unit">ms</span></span>
+                <?php else : ?>
+                    <span class="svc-stat__value svc-stat__value--muted">—</span>
+                <?php endif; ?>
             </div>
             <div class="svc-stat">
                 <span class="svc-stat__label"><?php echo self::icon( 'uptime' ); ?>Uptime (30d)</span>

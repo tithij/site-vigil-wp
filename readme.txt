@@ -4,7 +4,7 @@ Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.4.0
+Stable tag: 0.4.1
 License: GPLv2 or later
 
 Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
@@ -29,6 +29,10 @@ read-only summary of what Site Vigil already knows about your site.
    to your Site Vigil account
 
 == Changelog ==
+
+= 0.4.1 =
+* Restored the "Avg response" stat tile (6 tiles total, matching the mockup)
+  now that get-site-summary actually computes and returns avg_response_ms
 
 = 0.4.0 =
 * Settings screen rebuilt to match the shared connector-contract mockup:
