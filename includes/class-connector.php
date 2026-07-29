@@ -33,6 +33,7 @@ class Site_Vigil_Connector {
         add_action( 'admin_post_site_vigil_connect_manual', [ __CLASS__, 'handle_manual_code' ] );
         add_action( 'admin_post_site_vigil_disconnect', [ __CLASS__, 'handle_disconnect' ] );
         add_action( 'admin_post_site_vigil_refresh_summary', [ __CLASS__, 'handle_refresh' ] );
+        add_action( 'wp_dashboard_setup', [ __CLASS__, 'register_dashboard_widget' ] );
     }
 
     public static function is_connected() {
@@ -139,7 +140,7 @@ class Site_Vigil_Connector {
         delete_option( self::TOKEN_OPTION );
         delete_option( self::WEBSITE_ID_OPTION );
         delete_transient( self::SUMMARY_TRANSIENT );
-        wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
+        wp_safe_redirect( self::redirect_back_url() );
         exit;
     }
 
@@ -149,8 +150,19 @@ class Site_Vigil_Connector {
         }
         check_admin_referer( 'site_vigil_refresh_summary' );
         delete_transient( self::SUMMARY_TRANSIENT );
-        wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
+        wp_safe_redirect( self::redirect_back_url() );
         exit;
+    }
+
+    /**
+     * Refresh/Disconnect are now triggered from two admin screens (the
+     * settings page and the Dashboard widget) — send the user back to
+     * whichever one they clicked from instead of always landing on Settings.
+     * wp_safe_redirect() already falls back to admin_url() if the referer
+     * isn't an allowed host, so this stays safe with no extra validation.
+     */
+    private static function redirect_back_url() {
+        return wp_get_referer() ?: admin_url( 'options-general.php?page=site-vigil' );
     }
 
     private static function fetch_summary() {
@@ -225,6 +237,53 @@ class Site_Vigil_Connector {
             'arrow'     => '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
         ];
         return isset( $icons[ $name ] ) ? $icons[ $name ] : '';
+    }
+
+    /** wp_dashboard_setup callback — only registers the widget for users who could act on it. */
+    public static function register_dashboard_widget() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+        wp_add_dashboard_widget( 'site_vigil_dashboard_widget', 'Site Vigil', [ __CLASS__, 'render_dashboard_widget' ] );
+    }
+
+    /**
+     * Second call site for render_widget() — same cached summary (fetch_summary()
+     * reads/writes the one SUMMARY_TRANSIENT regardless of which screen asks),
+     * same status/stat/incident markup. Only the not-connected and
+     * disconnected states get their own (minimal, prompt-only) rendering here,
+     * since duplicating the full connect flow (§4) into the Dashboard isn't
+     * wanted — that stays on the settings page.
+     */
+    public static function render_dashboard_widget() {
+        self::print_styles();
+        echo '<div id="site-vigil-connector" class="svc-dash">';
+        if ( ! self::is_connected() ) {
+            self::render_dashboard_prompt(
+                "Connect this site to see live status here.",
+                'Connect Site Vigil'
+            );
+        } else {
+            $summary = self::fetch_summary();
+            if ( ! empty( $summary['disconnected'] ) ) {
+                self::render_dashboard_prompt(
+                    'Disconnected from Site Vigil — the connection was reset.',
+                    'Reconnect'
+                );
+            } else {
+                self::render_widget( $summary );
+            }
+        }
+        echo '</div>';
+    }
+
+    private static function render_dashboard_prompt( $message, $cta_label ) {
+        ?>
+        <p class="svc-lede" style="margin-top:0;"><?php echo esc_html( $message ); ?></p>
+        <p style="margin-bottom:0;">
+            <a href="<?php echo esc_url( admin_url( 'options-general.php?page=site-vigil' ) ); ?>" class="button button-primary"><?php echo esc_html( $cta_label ); ?></a>
+        </p>
+        <?php
     }
 
     public static function render_settings_section() {
@@ -320,6 +379,10 @@ class Site_Vigil_Connector {
                 background:#fff; border:1px solid var(--svc-border); border-radius:10px;
                 max-width:820px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.03);
             }
+            /* Dashboard-widget context: WP's own .postbox already supplies the
+               card chrome (background, border, shadow) — reset ours so the
+               reused render_widget() markup doesn't sit in a card-in-a-card. */
+            #site-vigil-connector.svc-dash{ background:none; border:none; border-radius:0; max-width:none; box-shadow:none; }
             #site-vigil-connector .svc-mono{ font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace; }
             #site-vigil-connector .svc-brandbar{ display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--svc-border); }
             #site-vigil-connector .svc-brandmark{ width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,var(--sv-teal),var(--sv-teal-dark)); display:flex; align-items:center; justify-content:center; flex-shrink:0; }

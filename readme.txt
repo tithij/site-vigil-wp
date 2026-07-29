@@ -4,7 +4,7 @@ Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.4.5
+Stable tag: 0.5.0
 License: GPLv2 or later
 
 Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
@@ -29,6 +29,15 @@ read-only summary of what Site Vigil already knows about your site.
    to your Site Vigil account
 
 == Changelog ==
+
+= 0.5.0 =
+* Added a wp-admin Dashboard widget showing the same live status card as
+  the settings page (status badge, stats, incident line) — same cached
+  summary, no extra API calls
+* Not-connected/disconnected states show a minimal prompt linking to
+  Settings instead of duplicating the full connect flow
+* Refresh/Disconnect now return you to whichever screen you clicked them
+  from (Dashboard or Settings) instead of always landing on Settings
 
 = 0.4.5 =
 * Fixed a timezone bug in every "X ago" label ("Checked...", "Since...",
