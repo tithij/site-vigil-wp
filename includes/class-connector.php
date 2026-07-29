@@ -23,7 +23,10 @@ class Site_Vigil_Connector {
     const TOKEN_OPTION      = 'site_vigil_plugin_token';
     const WEBSITE_ID_OPTION = 'site_vigil_website_id';
     const SUMMARY_TRANSIENT = 'site_vigil_summary_cache';
-    const SUMMARY_TTL       = 300; // seconds — matches the spec's 5-minute client-side cache.
+    // Matches get-site-summary's own 4-minute per-token rate limit exactly —
+    // any shorter and a reload would routinely hit 429 and just show the same
+    // cached data anyway; any longer pads staleness the backend doesn't need.
+    const SUMMARY_TTL       = 240; // seconds
 
     public static function init() {
         add_action( 'admin_post_site_vigil_connect_callback', [ __CLASS__, 'handle_redirect_callback' ] );

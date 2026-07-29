@@ -4,7 +4,7 @@ Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.4.3
+Stable tag: 0.4.4
 License: GPLv2 or later
 
 Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
@@ -29,6 +29,12 @@ read-only summary of what Site Vigil already knows about your site.
    to your Site Vigil account
 
 == Changelog ==
+
+= 0.4.4 =
+* Shortened the client-side summary cache from 5 to 4 minutes, matching
+  get-site-summary's own per-token rate limit exactly — a settings-page
+  reload now always gets the freshest data the backend allows, instead of
+  padding an extra minute of staleness on top
 
 = 0.4.3 =
 * Widened the connector card (620px → 820px max-width) — it read too narrow
