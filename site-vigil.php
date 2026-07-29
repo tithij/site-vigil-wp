@@ -3,7 +3,7 @@
  * Plugin Name: Site Vigil
  * Plugin URI: https://site-vigil.com
  * Description: Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
- * Version: 0.3.1
+ * Version: 0.4.0
  * Author: Site Vigil
  * License: GPL v2 or later
  */
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SITE_VIGIL_VERSION', '0.3.1' );
+define( 'SITE_VIGIL_VERSION', '0.4.0' );
 define( 'SITE_VIGIL_OPTION_KEY', 'site_vigil_tracking_id' );
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-connector.php';
@@ -43,19 +43,6 @@ function site_vigil_add_settings_page() {
     );
 }
 
-add_action( 'admin_init', 'site_vigil_register_settings' );
-function site_vigil_register_settings() {
-    register_setting(
-        'site_vigil_settings_group',
-        SITE_VIGIL_OPTION_KEY,
-        [
-            'type'              => 'string',
-            'sanitize_callback' => 'sanitize_text_field',
-            'default'           => '',
-        ]
-    );
-}
-
 function site_vigil_render_settings_page() {
     if ( ! current_user_can( 'manage_options' ) ) {
         return;
@@ -63,30 +50,6 @@ function site_vigil_render_settings_page() {
     ?>
     <div class="wrap">
         <h1>Site Vigil</h1>
-        <form method="post" action="options.php">
-            <?php settings_fields( 'site_vigil_settings_group' ); ?>
-            <table class="form-table" role="presentation">
-                <tr>
-                    <th scope="row">
-                        <label for="site_vigil_tracking_id">Tracking ID</label>
-                    </th>
-                    <td>
-                        <input
-                            type="text"
-                            id="site_vigil_tracking_id"
-                            name="<?php echo esc_attr( SITE_VIGIL_OPTION_KEY ); ?>"
-                            value="<?php echo esc_attr( get_option( SITE_VIGIL_OPTION_KEY, '' ) ); ?>"
-                            class="regular-text"
-                            placeholder="e.g. sv_live_xxxxxxxxxxxx"
-                        />
-                        <p class="description">
-                            Found in your Site Vigil dashboard under this site's settings. Add the site there first to get an ID.
-                        </p>
-                    </td>
-                </tr>
-            </table>
-            <?php submit_button( 'Save Tracking ID' ); ?>
-        </form>
         <?php Site_Vigil_Connector::render_settings_section(); ?>
     </div>
     <?php

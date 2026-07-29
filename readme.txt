@@ -4,7 +4,7 @@ Tags: monitoring, uptime, analytics
 Requires at least: 5.8
 Tested up to: 6.4
 Requires PHP: 7.4
-Stable tag: 0.3.1
+Stable tag: 0.4.0
 License: GPLv2 or later
 
 Lightweight visitor tracking and uptime monitoring for WordPress, powered by Site Vigil.
@@ -29,6 +29,15 @@ read-only summary of what Site Vigil already knows about your site.
    to your Site Vigil account
 
 == Changelog ==
+
+= 0.4.0 =
+* Settings screen rebuilt to match the shared connector-contract mockup:
+  brand header, pulse-dot status, incident line, and a down-state alert banner
+* "Connect manually" is now one section with both Tracking ID and Pairing
+  code fields behind a single Save button, replacing the separate top-of-page
+  Tracking ID form
+* Tracking ID is now populated automatically by the connect handshake
+  (bundled with the plugin token) instead of always requiring manual entry
 
 = 0.3.1 =
 * Redesigned the Connector settings screen: status badge, at-a-glance stat

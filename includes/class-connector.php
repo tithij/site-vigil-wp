@@ -5,6 +5,10 @@
  * (create-connect-session / exchange-connect-code). No self-check, no
  * ping/visit history stored here — Cloudflare originates every check, this
  * plugin only displays a cached summary.
+ *
+ * Settings-screen markup/styling follows site-vigil-wp-settings-v2.html
+ * (the shared connector-contract mockup) — keep in lockstep with the Joomla
+ * port when either changes.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -57,14 +61,37 @@ class Site_Vigil_Connector {
         exit;
     }
 
-    /** Manual pairing-code form submit — the "Already have a pairing code?" field. */
+    /**
+     * "Connect manually" form submit (spec §3a) — one Save button covering
+     * two independent fields. Tracking ID alone stores directly with zero
+     * outbound calls (today's v1 floor behavior); a pairing code, with or
+     * without a typed Tracking ID, triggers the same exchange the automatic
+     * flow uses and its bundled tracking_id wins if it differs from what was
+     * typed.
+     */
     public static function handle_manual_code() {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Forbidden', 403 );
         }
         check_admin_referer( 'site_vigil_connect_manual' );
-        $code = isset( $_POST['site_vigil_pairing_code'] ) ? sanitize_text_field( wp_unslash( $_POST['site_vigil_pairing_code'] ) ) : '';
-        self::exchange_and_store( $code );
+
+        $tracking_id = isset( $_POST['site_vigil_tracking_id'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['site_vigil_tracking_id'] ) ) ) : '';
+        $code        = isset( $_POST['site_vigil_pairing_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['site_vigil_pairing_code'] ) ) ) : '';
+
+        if ( '' === $tracking_id && '' === $code ) {
+            set_transient( 'site_vigil_connect_error', 'Enter a Tracking ID, a pairing code, or both.', 60 );
+            wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
+            exit;
+        }
+
+        if ( '' !== $tracking_id ) {
+            update_option( SITE_VIGIL_OPTION_KEY, $tracking_id );
+        }
+
+        if ( '' !== $code ) {
+            self::exchange_and_store( $code );
+        }
+
         wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
         exit;
     }
@@ -101,6 +128,12 @@ class Site_Vigil_Connector {
 
         update_option( self::TOKEN_OPTION, $body['plugin_token'] );
         update_option( self::WEBSITE_ID_OPTION, $body['website_id'] );
+        // Bundled response (spec §3/§3a) — overwrites whatever Tracking ID was
+        // typed manually if it differs, and populates it for free on the
+        // automatic redirect flow, which never had a Tracking ID field at all.
+        if ( ! empty( $body['tracking_id'] ) ) {
+            update_option( SITE_VIGIL_OPTION_KEY, sanitize_text_field( $body['tracking_id'] ) );
+        }
         delete_transient( self::SUMMARY_TRANSIENT );
     }
 
@@ -187,40 +220,100 @@ class Site_Vigil_Connector {
         return self::APP_URL . '/login?redirect=' . rawurlencode( '/site/' . $website_id );
     }
 
+    // ---- small inline icon set, mirrors the mockup's line-icon style ----
+    private static function icon( $name ) {
+        $icons = [
+            'shield'    => '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>',
+            'connect'   => '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>',
+            'chev'      => '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 6l6 6-6 6"/></svg>',
+            'warn'      => '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 9v4M12 17h.01M10.3 3.9 2 18a2 2 0 0 0 1.7 3h16.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>',
+            'active'    => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="9"/></svg>',
+            'sessions'  => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><circle cx="9" cy="7" r="3.2"/><path d="M2.5 20c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6"/></svg>',
+            'uptime'    => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/><path d="M12 8v4l3 3"/></svg>',
+            'domain'    => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+            'ssl'       => '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"><path d="M12 22s8-4.5 8-11V5l-8-3-8 3v6c0 6.5 8 11 8 11z"/></svg>',
+            'check'     => '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+            'arrow'     => '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+        ];
+        return isset( $icons[ $name ] ) ? $icons[ $name ] : '';
+    }
+
     public static function render_settings_section() {
         $error = get_transient( 'site_vigil_connect_error' );
         if ( $error ) {
             delete_transient( 'site_vigil_connect_error' );
         }
         self::print_styles();
+        $summary = self::is_connected() ? self::fetch_summary() : null;
+        $show_connect_hero = ! self::is_connected() || ! empty( $summary['disconnected'] );
         ?>
-        <div id="site-vigil-connector" class="postbox svc-card">
-            <div class="postbox-header">
-                <h2 class="hndle"><span>Site Vigil Connector</span></h2>
+        <div id="site-vigil-connector" class="svc-card">
+            <div class="svc-brandbar">
+                <div class="svc-brandmark">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 5v6c0 5 3.4 8.7 8 10 4.6-1.3 8-5 8-10V5l-8-3z"/><path d="m9 12 2 2 4-4"/></svg>
+                </div>
+                <span class="svc-brand-name">Site Vigil</span>
+                <?php if ( self::is_connected() && ! $show_connect_hero ) : ?>
+                    <span class="svc-brand-meta">Tracking ID: <span class="svc-mono"><?php echo esc_html( get_option( SITE_VIGIL_OPTION_KEY, '' ) ); ?></span></span>
+                <?php endif; ?>
             </div>
-            <div class="inside">
+
+            <div class="svc-body">
                 <?php if ( $error ) : ?>
                     <div class="notice notice-error inline"><p><?php echo esc_html( $error ); ?></p></div>
                 <?php endif; ?>
 
-                <?php if ( self::is_connected() ) : ?>
-                    <?php self::render_widget(); ?>
+                <?php if ( $show_connect_hero ) : ?>
+                    <?php if ( ! empty( $summary['disconnected'] ) ) : ?>
+                        <div class="notice notice-warning inline"><p>Disconnected from Site Vigil — the connection was reset. Reconnect below.</p></div>
+                    <?php endif; ?>
+                    <?php self::render_connect_hero(); ?>
                 <?php else : ?>
-                    <p class="svc-lead">Connect this site to your Site Vigil dashboard to see live status here.</p>
-                    <p>
-                        <a href="<?php echo esc_url( self::connect_url() ); ?>" class="button button-primary button-hero" target="_blank" rel="noopener noreferrer">Connect automatically</a>
-                    </p>
-                    <details class="svc-manual">
-                        <summary>Already have a pairing code?</summary>
-                        <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="svc-manual__form">
-                            <?php wp_nonce_field( 'site_vigil_connect_manual' ); ?>
-                            <input type="hidden" name="action" value="site_vigil_connect_manual" />
-                            <input type="text" id="site_vigil_pairing_code" name="site_vigil_pairing_code" class="regular-text" placeholder="e.g. 8F3K-QZ2P" />
-                            <?php submit_button( 'Connect with code', 'secondary', 'submit', false ); ?>
-                        </form>
-                    </details>
+                    <?php self::render_widget( $summary ); ?>
                 <?php endif; ?>
             </div>
+        </div>
+        <?php
+    }
+
+    private static function render_connect_hero() {
+        ?>
+        <div class="svc-connect-hero">
+            <h2>Let's connect this site</h2>
+            <p>Link this site to your Site Vigil dashboard to see uptime, SSL, domain, and visitor stats right here in wp&#8209;admin. One step sets up tracking and monitoring together — no separate tracking ID to copy.</p>
+            <p class="svc-connect-primary">
+                <a href="<?php echo esc_url( self::connect_url() ); ?>" class="button button-primary button-hero svc-btn-icon" target="_blank" rel="noopener noreferrer">
+                    <?php echo self::icon( 'connect' ); ?> Connect automatically
+                </a>
+            </p>
+            <div class="svc-trust-line"><?php echo self::icon( 'shield' ); ?> No password required — you'll approve this from your Site Vigil dashboard.</div>
+
+            <details class="svc-manual">
+                <summary><?php echo self::icon( 'chev' ); ?> Connect manually</summary>
+
+                <div class="svc-fallback-note">
+                    <?php echo self::icon( 'warn' ); ?>
+                    <div>Get these from Site Vigil (Sites → this site → "Connect manually") — you're already logged in there.</div>
+                </div>
+
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+                    <?php wp_nonce_field( 'site_vigil_connect_manual' ); ?>
+                    <input type="hidden" name="action" value="site_vigil_connect_manual" />
+
+                    <div class="svc-field-row">
+                        <label for="site_vigil_tracking_id">Tracking ID</label>
+                        <input type="text" id="site_vigil_tracking_id" name="site_vigil_tracking_id" class="svc-mono" placeholder="sv_8f2k1x9d" value="<?php echo esc_attr( get_option( SITE_VIGIL_OPTION_KEY, '' ) ); ?>" />
+                    </div>
+                    <div class="svc-field-row">
+                        <label for="site_vigil_pairing_code">Pairing code</label>
+                        <input type="text" id="site_vigil_pairing_code" name="site_vigil_pairing_code" class="svc-mono" placeholder="XXXX-XXXX" />
+                    </div>
+                    <div class="svc-fallback-actions">
+                        <?php submit_button( 'Save', 'secondary', 'submit', false ); ?>
+                    </div>
+                    <p class="svc-pairing-hint">Tracking ID alone restores basic tracking. Add the pairing code too, to enable the status widget above.</p>
+                </form>
+            </details>
         </div>
         <?php
     }
@@ -233,30 +326,83 @@ class Site_Vigil_Connector {
         $printed = true;
         ?>
         <style>
-            #site-vigil-connector.svc-card { max-width: 640px; }
-            #site-vigil-connector .svc-lead { font-size: 14px; color: #3c434a; margin-top: 0; }
-            #site-vigil-connector .svc-manual { margin-top: 16px; border-top: 1px solid #dcdcde; padding-top: 12px; }
-            #site-vigil-connector .svc-manual summary { cursor: pointer; font-weight: 600; color: #2271b1; }
-            #site-vigil-connector .svc-manual summary:hover { color: #135e96; }
-            #site-vigil-connector .svc-manual__form { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-            #site-vigil-connector .svc-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-            #site-vigil-connector .svc-badge { display: inline-flex; align-items: center; gap: 7px; font: 600 12px/1 -apple-system, sans-serif; letter-spacing: .04em; text-transform: uppercase; padding: 5px 11px; border-radius: 999px; }
-            #site-vigil-connector .svc-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-            #site-vigil-connector .svc-updated { color: #787c82; font-size: 12px; }
-            #site-vigil-connector .svc-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-            #site-vigil-connector .svc-stat { background: #f6f7f7; border: 1px solid #e0e0e0; border-radius: 6px; padding: 10px 12px; }
-            #site-vigil-connector .svc-stat--wide { grid-column: 1 / -1; }
-            #site-vigil-connector .svc-stat__label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: #787c82; margin-bottom: 4px; }
-            #site-vigil-connector .svc-stat__value { display: block; font-size: 16px; font-weight: 600; color: #1d2327; }
-            #site-vigil-connector .svc-stat__value--small { font-size: 13px; font-weight: 500; }
-            #site-vigil-connector .svc-actions { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-            #site-vigil-connector .svc-danger-link { color: #d63638; text-decoration: none; margin-left: auto; }
-            #site-vigil-connector .svc-danger-link:hover { color: #b32d2e; text-decoration: underline; }
-            #site-vigil-connector .svc-confirm { margin-top: 16px; padding: 12px 14px; border: 1px solid #d63638; background: #fcf0f1; border-radius: 6px; }
-            #site-vigil-connector .svc-confirm p { margin: 0 0 10px; font-size: 13px; color: #1d2327; }
-            #site-vigil-connector .svc-confirm__actions { display: flex; gap: 8px; }
-            #site-vigil-connector .svc-confirm__danger { background: #d63638; border-color: #d63638; }
-            #site-vigil-connector .svc-confirm__danger:hover { background: #b32d2e; border-color: #b32d2e; }
+            #site-vigil-connector{
+                --sv-teal:#298E7A; --sv-teal-dark:#1F6E5E;
+                --sv-success:#16A34A; --sv-success-tint:#EDFBF2;
+                --sv-danger:#DC2626; --sv-danger-tint:#FDF0F0;
+                --sv-warning:#D97706; --sv-warning-tint:#FEF6E9;
+                --svc-border:#dcdcde; --svc-ink:#1d2327; --svc-muted:#6b7280;
+                background:#fff; border:1px solid var(--svc-border); border-radius:10px;
+                max-width:660px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.03);
+            }
+            #site-vigil-connector .svc-mono{ font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace; }
+            #site-vigil-connector .svc-brandbar{ display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--svc-border); }
+            #site-vigil-connector .svc-brandmark{ width:26px; height:26px; border-radius:7px; background:linear-gradient(135deg,var(--sv-teal),var(--sv-teal-dark)); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+            #site-vigil-connector .svc-brand-name{ font-weight:600; font-size:15px; letter-spacing:-.01em; color:var(--svc-ink); }
+            #site-vigil-connector .svc-brand-meta{ margin-left:auto; font-size:12.5px; color:var(--svc-muted); }
+            #site-vigil-connector .svc-body{ padding:20px; }
+
+            #site-vigil-connector .svc-connect-hero h2{ font-size:17px; margin:0 0 6px; font-weight:600; letter-spacing:-.01em; color:var(--svc-ink); }
+            #site-vigil-connector .svc-connect-hero p{ font-size:13.5px; color:var(--svc-muted); line-height:1.55; margin:0 0 18px; max-width:52ch; }
+            #site-vigil-connector .svc-connect-primary{ margin:0 0 12px; }
+            #site-vigil-connector .svc-btn-icon{ display:inline-flex; align-items:center; gap:7px; }
+            #site-vigil-connector .svc-trust-line{ display:flex; align-items:center; gap:7px; font-size:12px; color:#8b93a1; margin-top:6px; }
+            #site-vigil-connector .svc-manual{ margin-top:18px; padding-top:16px; border-top:1px solid #eee; }
+            #site-vigil-connector .svc-manual summary{ cursor:pointer; font-size:13px; color:var(--sv-teal); font-weight:600; list-style:none; display:flex; align-items:center; gap:6px; }
+            #site-vigil-connector .svc-manual summary::-webkit-details-marker{ display:none; }
+            #site-vigil-connector .svc-manual summary svg{ transition:.15s; }
+            #site-vigil-connector .svc-manual[open] summary svg{ transform:rotate(90deg); }
+            #site-vigil-connector .svc-fallback-note{ display:flex; gap:8px; align-items:flex-start; background:var(--sv-warning-tint); border:1px solid #f3ddb2; border-radius:7px; padding:10px 12px; margin-top:12px; font-size:12px; color:#7a5205; line-height:1.5; }
+            #site-vigil-connector .svc-fallback-note svg{ flex-shrink:0; margin-top:1px; }
+            #site-vigil-connector .svc-field-row{ margin-top:10px; }
+            #site-vigil-connector .svc-field-row label{ display:block; font-size:11.5px; font-weight:600; color:var(--svc-muted); text-transform:uppercase; letter-spacing:.03em; margin-bottom:5px; }
+            #site-vigil-connector .svc-field-row input{ font-size:13px; border:1px solid var(--svc-border); border-radius:7px; padding:9px 12px; width:100%; max-width:320px; }
+            #site-vigil-connector .svc-fallback-actions{ margin-top:12px; }
+            #site-vigil-connector .svc-pairing-hint{ font-size:11.5px; color:#9aa0a8; margin-top:8px; line-height:1.5; }
+
+            #site-vigil-connector .svc-status-row{ display:flex; align-items:center; gap:12px; margin-bottom:4px; }
+            #site-vigil-connector .svc-pulse-dot{ position:relative; width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+            #site-vigil-connector .svc-pulse-dot::after{ content:''; position:absolute; inset:-6px; border-radius:50%; opacity:.35; animation:svcPulse 2.2s ease-out infinite; }
+            #site-vigil-connector .svc-pulse-dot.svc-online{ background:var(--sv-success); }
+            #site-vigil-connector .svc-pulse-dot.svc-online::after{ background:var(--sv-success); }
+            #site-vigil-connector .svc-pulse-dot.svc-degraded{ background:var(--sv-warning); }
+            #site-vigil-connector .svc-pulse-dot.svc-degraded::after{ background:var(--sv-warning); }
+            #site-vigil-connector .svc-pulse-dot.svc-down{ background:var(--sv-danger); }
+            #site-vigil-connector .svc-pulse-dot.svc-down::after{ background:var(--sv-danger); animation-duration:1.1s; }
+            @keyframes svcPulse{ 0%{ transform:scale(.6); opacity:.5; } 100%{ transform:scale(1.9); opacity:0; } }
+            #site-vigil-connector .svc-status-text{ font-weight:600; font-size:15px; }
+            #site-vigil-connector .svc-status-text.svc-online{ color:#0f7a44; }
+            #site-vigil-connector .svc-status-text.svc-degraded{ color:#8a5a06; }
+            #site-vigil-connector .svc-status-text.svc-down{ color:var(--sv-danger); }
+            #site-vigil-connector .svc-status-meta{ margin-left:auto; font-size:12.5px; color:var(--svc-muted); }
+            #site-vigil-connector .svc-lede{ font-size:13.5px; color:var(--svc-muted); margin:2px 0 16px; line-height:1.5; }
+
+            #site-vigil-connector .svc-alert-banner{ display:flex; gap:10px; align-items:flex-start; background:var(--sv-danger-tint); border:1px solid #f6cccc; border-radius:8px; padding:12px 14px; margin-bottom:16px; font-size:13px; color:#7a1f1f; line-height:1.5; }
+            #site-vigil-connector .svc-alert-banner svg{ flex-shrink:0; margin-top:1px; }
+            #site-vigil-connector .svc-alert-banner b{ color:#5c1414; }
+
+            #site-vigil-connector .svc-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--svc-border); border:1px solid var(--svc-border); border-radius:8px; overflow:hidden; margin-bottom:16px; }
+            #site-vigil-connector .svc-stat{ background:#fff; padding:12px 13px; }
+            #site-vigil-connector .svc-stat__label{ display:flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:#8b93a1; margin-bottom:6px; }
+            #site-vigil-connector .svc-stat__label svg{ opacity:.75; }
+            #site-vigil-connector .svc-stat__value{ font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-weight:600; font-size:16px; color:var(--svc-ink); }
+            #site-vigil-connector .svc-stat__value--muted{ color:#b8bec7; font-size:14px; }
+            #site-vigil-connector .svc-stat__value--warn{ color:var(--sv-warning); }
+            #site-vigil-connector .svc-stat__unit{ font-size:11px; font-weight:500; color:#8b93a1; }
+
+            #site-vigil-connector .svc-incident-line{ display:flex; align-items:center; gap:8px; font-size:13px; color:var(--svc-muted); padding:11px 13px; background:#fafafb; border:1px solid var(--svc-border); border-radius:8px; margin-bottom:16px; }
+            #site-vigil-connector .svc-incident-line b{ color:var(--svc-ink); font-weight:600; }
+            #site-vigil-connector .svc-incident-line svg{ flex-shrink:0; color:var(--sv-success); }
+            #site-vigil-connector .svc-incident-line.svc-none svg{ color:#9aa0a8; }
+
+            #site-vigil-connector .svc-actions{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+            #site-vigil-connector .svc-btn-danger{ background:var(--sv-danger); border-color:var(--sv-danger); }
+            #site-vigil-connector .svc-btn-danger:hover{ background:#b91c1c; border-color:#b91c1c; }
+            #site-vigil-connector .svc-danger-link{ color:#b23a3a; margin-left:auto; }
+            #site-vigil-connector .svc-danger-link:hover{ color:var(--sv-danger); }
+            #site-vigil-connector .svc-confirm{ margin-top:16px; padding:12px 14px; border:1px solid #d63638; background:#fcf0f1; border-radius:6px; }
+            #site-vigil-connector .svc-confirm p{ margin:0 0 10px; font-size:13px; color:#1d2327; }
+            #site-vigil-connector .svc-confirm__actions{ display:flex; gap:8px; }
         </style>
         <script>
             function svcShowDisconnectConfirm() {
@@ -271,78 +417,97 @@ class Site_Vigil_Connector {
         <?php
     }
 
-    private static function render_widget() {
-        $summary = self::fetch_summary();
-        if ( ! $summary ) {
-            return;
-        }
-
-        if ( ! empty( $summary['disconnected'] ) ) {
-            ?>
-            <div class="notice notice-warning inline"><p>Disconnected from Site Vigil.</p></div>
-            <p><a href="<?php echo esc_url( admin_url( 'options-general.php?page=site-vigil' ) ); ?>" class="button">Reload to reconnect</a></p>
-            <?php
-            return;
-        }
-        if ( ! empty( $summary['error'] ) ) {
-            echo '<div class="notice notice-error inline"><p>' . esc_html( $summary['error'] ) . '</p></div>';
+    private static function render_widget( $summary ) {
+        if ( ! $summary || ! empty( $summary['error'] ) ) {
+            $message = $summary['error'] ?? 'Unexpected error fetching summary.';
+            echo '<div class="notice notice-error inline"><p>' . esc_html( $message ) . '</p></div>';
             return;
         }
 
         $status_meta = [
-            'ONLINE'   => [ 'label' => 'Online',   'color' => '#10b981' ],
-            'DEGRADED' => [ 'label' => 'Degraded', 'color' => '#f59e0b' ],
-            'OFFLINE'  => [ 'label' => 'Offline',  'color' => '#f43f5e' ],
+            'ONLINE'   => [ 'label' => 'Online',   'class' => 'svc-online' ],
+            'DEGRADED' => [ 'label' => 'Degraded', 'class' => 'svc-degraded' ],
+            'OFFLINE'  => [ 'label' => 'Down',      'class' => 'svc-down' ],
         ];
-        $status = isset( $summary['status'] ) ? $summary['status'] : 'UNKNOWN';
-        $meta   = isset( $status_meta[ $status ] ) ? $status_meta[ $status ] : [ 'label' => ucfirst( strtolower( $status ) ), 'color' => '#8c8f94' ];
+        $status = isset( $summary['status'] ) ? $summary['status'] : 'ONLINE';
+        $meta   = isset( $status_meta[ $status ] ) ? $status_meta[ $status ] : [ 'label' => ucfirst( strtolower( $status ) ), 'class' => 'svc-online' ];
+
+        $last_incident = $summary['last_incident'] ?? null;
         ?>
-        <div class="svc-head">
-            <span class="svc-badge" style="color:<?php echo esc_attr( $meta['color'] ); ?>;background:<?php echo esc_attr( $meta['color'] ); ?>1a;">
-                <span class="svc-dot" style="background:<?php echo esc_attr( $meta['color'] ); ?>;"></span>
-                <?php echo esc_html( $meta['label'] ); ?>
+        <div class="svc-status-row">
+            <span class="svc-pulse-dot <?php echo esc_attr( $meta['class'] ); ?>"></span>
+            <span class="svc-status-text <?php echo esc_attr( $meta['class'] ); ?>"><?php echo esc_html( $meta['label'] ); ?></span>
+            <span class="svc-status-meta">
+                <?php if ( 'OFFLINE' === $status && $last_incident ) : ?>
+                    Since <?php echo esc_html( human_time_diff( strtotime( $last_incident['started_at'] ), current_time( 'timestamp' ) ) ); ?> ago
+                <?php elseif ( ! empty( $summary['generated_at'] ) ) : ?>
+                    Checked <?php echo esc_html( human_time_diff( strtotime( $summary['generated_at'] ), current_time( 'timestamp' ) ) ); ?> ago
+                <?php endif; ?>
             </span>
-            <?php if ( ! empty( $summary['generated_at'] ) ) : ?>
-                <span class="svc-updated">Updated <?php echo esc_html( human_time_diff( strtotime( $summary['generated_at'] ), current_time( 'timestamp' ) ) ); ?> ago</span>
-            <?php endif; ?>
         </div>
+
+        <?php if ( 'OFFLINE' === $status ) : ?>
+            <p class="svc-lede">We're watching closely and will alert you the moment it recovers.</p>
+            <div class="svc-alert-banner">
+                <?php echo self::icon( 'warn' ); ?>
+                <div><b>Confirmed before alerting</b> — this isn't a one&#8209;off blip. Site owners have been notified.</div>
+            </div>
+        <?php elseif ( 'DEGRADED' === $status ) : ?>
+            <p class="svc-lede">Responding, but with some failed or slow checks recently.</p>
+        <?php else : ?>
+            <p class="svc-lede">Everything's healthy — monitored from Site Vigil's own regions.</p>
+        <?php endif; ?>
 
         <div class="svc-stats">
             <div class="svc-stat">
-                <span class="svc-stat__label">Uptime (30d)</span>
-                <span class="svc-stat__value"><?php echo esc_html( $summary['uptime_pct_30d'] ?? '—' ); ?>%</span>
+                <span class="svc-stat__label"><?php echo self::icon( 'active' ); ?>Active now</span>
+                <span class="svc-stat__value"><?php echo esc_html( $summary['active_now'] ?? 0 ); ?></span>
             </div>
             <div class="svc-stat">
-                <span class="svc-stat__label">SSL expires in</span>
-                <span class="svc-stat__value"><?php echo isset( $summary['ssl_days_remaining'] ) && null !== $summary['ssl_days_remaining'] ? esc_html( $summary['ssl_days_remaining'] ) . ' days' : '—'; ?></span>
-            </div>
-            <div class="svc-stat">
-                <span class="svc-stat__label">Domain expires in</span>
-                <span class="svc-stat__value"><?php echo isset( $summary['domain_days_remaining'] ) && null !== $summary['domain_days_remaining'] ? esc_html( $summary['domain_days_remaining'] ) . ' days' : '—'; ?></span>
-            </div>
-            <div class="svc-stat">
-                <span class="svc-stat__label">Sessions today</span>
+                <span class="svc-stat__label"><?php echo self::icon( 'sessions' ); ?>Sessions today</span>
                 <span class="svc-stat__value"><?php echo esc_html( $summary['sessions_today'] ?? 0 ); ?></span>
             </div>
             <div class="svc-stat">
-                <span class="svc-stat__label">Active now</span>
-                <span class="svc-stat__value"><?php echo esc_html( $summary['active_now'] ?? 0 ); ?></span>
-            </div>
-            <div class="svc-stat svc-stat--wide">
-                <span class="svc-stat__label">Last incident</span>
-                <span class="svc-stat__value svc-stat__value--small">
-                    <?php if ( ! empty( $summary['last_incident'] ) ) : ?>
-                        <?php echo esc_html( $summary['last_incident']['type'] ); ?> — <?php echo esc_html( $summary['last_incident']['duration_minutes'] ); ?> min
-                        (<?php echo esc_html( human_time_diff( strtotime( $summary['last_incident']['started_at'] ), current_time( 'timestamp' ) ) ); ?> ago)
-                    <?php else : ?>
-                        None in the last 30 days
-                    <?php endif; ?>
+                <span class="svc-stat__label"><?php echo self::icon( 'uptime' ); ?>Uptime (30d)</span>
+                <span class="svc-stat__value <?php echo isset( $summary['uptime_pct_30d'] ) && $summary['uptime_pct_30d'] < 99 ? 'svc-stat__value--warn' : ''; ?>">
+                    <?php echo isset( $summary['uptime_pct_30d'] ) ? esc_html( $summary['uptime_pct_30d'] ) . '%' : '—'; ?>
                 </span>
+            </div>
+            <div class="svc-stat">
+                <span class="svc-stat__label"><?php echo self::icon( 'domain' ); ?>Domain expires</span>
+                <?php if ( isset( $summary['domain_days_remaining'] ) && null !== $summary['domain_days_remaining'] ) : ?>
+                    <span class="svc-stat__value"><?php echo esc_html( $summary['domain_days_remaining'] ); ?> <span class="svc-stat__unit">days</span></span>
+                <?php else : ?>
+                    <span class="svc-stat__value svc-stat__value--muted">Not watched yet</span>
+                <?php endif; ?>
+            </div>
+            <div class="svc-stat">
+                <span class="svc-stat__label"><?php echo self::icon( 'ssl' ); ?>SSL certificate</span>
+                <?php if ( isset( $summary['ssl_days_remaining'] ) && null !== $summary['ssl_days_remaining'] ) : ?>
+                    <span class="svc-stat__value"><?php echo esc_html( $summary['ssl_days_remaining'] ); ?> <span class="svc-stat__unit">days</span></span>
+                <?php else : ?>
+                    <span class="svc-stat__value svc-stat__value--muted">Not watched yet</span>
+                <?php endif; ?>
             </div>
         </div>
 
+        <?php if ( 'OFFLINE' !== $status ) : ?>
+        <div class="svc-incident-line <?php echo $last_incident ? '' : 'svc-none'; ?>">
+            <?php echo self::icon( 'check' ); ?>
+            <?php if ( $last_incident ) : ?>
+                <?php $ended_at = strtotime( $last_incident['started_at'] ) + ( (int) $last_incident['duration_minutes'] * 60 ); ?>
+                All clear for <b><?php echo esc_html( human_time_diff( $ended_at, current_time( 'timestamp' ) ) ); ?></b>
+                — last issue was a <?php echo esc_html( $last_incident['duration_minutes'] ); ?>&#8209;minute outage.
+            <?php else : ?>
+                No incidents in the last 30 days.
+            <?php endif; ?>
+        </div>
+        <?php endif; ?>
+
         <div class="svc-actions" id="svc-actions">
-            <a href="<?php echo esc_url( self::deep_link_url() ); ?>" class="button button-primary" target="_blank" rel="noopener noreferrer">View full details →</a>
+            <a href="<?php echo esc_url( self::deep_link_url() ); ?>" class="button button-primary<?php echo 'OFFLINE' === $status ? ' svc-btn-danger' : ''; ?>" target="_blank" rel="noopener noreferrer">
+                <?php echo 'OFFLINE' === $status ? 'View incident' : 'View full dashboard'; ?> <?php echo self::icon( 'arrow' ); ?>
+            </a>
             <a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=site_vigil_refresh_summary' ), 'site_vigil_refresh_summary' ) ); ?>" class="button">Refresh</a>
             <button type="button" class="button-link svc-danger-link" onclick="svcShowDisconnectConfirm();">Disconnect</button>
         </div>
@@ -353,7 +518,7 @@ class Site_Vigil_Connector {
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="display:inline;">
                     <?php wp_nonce_field( 'site_vigil_disconnect' ); ?>
                     <input type="hidden" name="action" value="site_vigil_disconnect" />
-                    <button type="submit" class="button button-primary svc-confirm__danger">Disconnect</button>
+                    <button type="submit" class="button button-primary">Disconnect</button>
                 </form>
             </div>
         </div>
