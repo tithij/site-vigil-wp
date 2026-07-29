@@ -315,7 +315,7 @@ class Site_Vigil_Connector {
                 --sv-warning:#D97706; --sv-warning-tint:#FEF6E9;
                 --svc-border:#dcdcde; --svc-ink:#1d2327; --svc-muted:#6b7280;
                 background:#fff; border:1px solid var(--svc-border); border-radius:10px;
-                max-width:660px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.03);
+                max-width:820px; overflow:hidden; box-shadow:0 1px 2px rgba(0,0,0,.03);
             }
             #site-vigil-connector .svc-mono{ font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace; }
             #site-vigil-connector .svc-brandbar{ display:flex; align-items:center; gap:10px; padding:14px 20px; border-bottom:1px solid var(--svc-border); }
@@ -385,6 +385,14 @@ class Site_Vigil_Connector {
             #site-vigil-connector .svc-confirm{ margin-top:16px; padding:12px 14px; border:1px solid #d63638; background:#fcf0f1; border-radius:6px; }
             #site-vigil-connector .svc-confirm p{ margin:0 0 10px; font-size:13px; color:#1d2327; }
             #site-vigil-connector .svc-confirm__actions{ display:flex; gap:8px; }
+
+            @media (max-width:782px){
+                #site-vigil-connector .svc-stats{ grid-template-columns:repeat(2,1fr); }
+            }
+            @media (max-width:480px){
+                #site-vigil-connector .svc-stats{ grid-template-columns:1fr; }
+                #site-vigil-connector .svc-danger-link{ margin-left:0; }
+            }
         </style>
         <script>
             function svcShowDisconnectConfirm() {
