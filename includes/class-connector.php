@@ -62,12 +62,11 @@ class Site_Vigil_Connector {
     }
 
     /**
-     * "Connect manually" form submit (spec §3a) — one Save button covering
-     * two independent fields. Tracking ID alone stores directly with zero
-     * outbound calls (today's v1 floor behavior); a pairing code, with or
-     * without a typed Tracking ID, triggers the same exchange the automatic
-     * flow uses and its bundled tracking_id wins if it differs from what was
-     * typed.
+     * "Connect manually" form submit (spec §3a) — a single pairing-code
+     * field. The Tracking ID is never typed by hand: exchange_and_store()
+     * populates it from the bundled exchange-connect-code response, so a
+     * separate Tracking ID input would just be a value the user watches get
+     * silently overwritten.
      */
     public static function handle_manual_code() {
         if ( ! current_user_can( 'manage_options' ) ) {
@@ -75,22 +74,8 @@ class Site_Vigil_Connector {
         }
         check_admin_referer( 'site_vigil_connect_manual' );
 
-        $tracking_id = isset( $_POST['site_vigil_tracking_id'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['site_vigil_tracking_id'] ) ) ) : '';
-        $code        = isset( $_POST['site_vigil_pairing_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['site_vigil_pairing_code'] ) ) ) : '';
-
-        if ( '' === $tracking_id && '' === $code ) {
-            set_transient( 'site_vigil_connect_error', 'Enter a Tracking ID, a pairing code, or both.', 60 );
-            wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
-            exit;
-        }
-
-        if ( '' !== $tracking_id ) {
-            update_option( SITE_VIGIL_OPTION_KEY, $tracking_id );
-        }
-
-        if ( '' !== $code ) {
-            self::exchange_and_store( $code );
-        }
+        $code = isset( $_POST['site_vigil_pairing_code'] ) ? trim( sanitize_text_field( wp_unslash( $_POST['site_vigil_pairing_code'] ) ) ) : '';
+        self::exchange_and_store( $code );
 
         wp_safe_redirect( admin_url( 'options-general.php?page=site-vigil' ) );
         exit;
@@ -128,9 +113,9 @@ class Site_Vigil_Connector {
 
         update_option( self::TOKEN_OPTION, $body['plugin_token'] );
         update_option( self::WEBSITE_ID_OPTION, $body['website_id'] );
-        // Bundled response (spec §3/§3a) — overwrites whatever Tracking ID was
-        // typed manually if it differs, and populates it for free on the
-        // automatic redirect flow, which never had a Tracking ID field at all.
+        // Bundled response (spec §3/§3a) — this is the only place the
+        // Tracking ID gets set from the manual flow; there's no UI field for
+        // it, so nothing here can conflict with a manually typed value.
         if ( ! empty( $body['tracking_id'] ) ) {
             update_option( SITE_VIGIL_OPTION_KEY, sanitize_text_field( $body['tracking_id'] ) );
         }
@@ -302,17 +287,13 @@ class Site_Vigil_Connector {
                     <input type="hidden" name="action" value="site_vigil_connect_manual" />
 
                     <div class="svc-field-row">
-                        <label for="site_vigil_tracking_id">Tracking ID</label>
-                        <input type="text" id="site_vigil_tracking_id" name="site_vigil_tracking_id" class="svc-mono" placeholder="sv_8f2k1x9d" value="<?php echo esc_attr( get_option( SITE_VIGIL_OPTION_KEY, '' ) ); ?>" />
-                    </div>
-                    <div class="svc-field-row">
                         <label for="site_vigil_pairing_code">Pairing code</label>
                         <input type="text" id="site_vigil_pairing_code" name="site_vigil_pairing_code" class="svc-mono" placeholder="XXXX-XXXX" />
                     </div>
                     <div class="svc-fallback-actions">
                         <?php submit_button( 'Save', 'secondary', 'submit', false ); ?>
                     </div>
-                    <p class="svc-pairing-hint">Tracking ID alone restores basic tracking. Add the pairing code too, to enable the status widget above.</p>
+                    <p class="svc-pairing-hint">Your Tracking ID is set automatically from this — no need to copy it separately.</p>
                 </form>
             </details>
         </div>
